@@ -1,7 +1,7 @@
 /*
 * 2025-1학기 자료구조 과제 1
 * 과제명: 다항식 덧셈
-* 학번: 2022041022 
+* 학번: 2022041022
 * 이름: 이정환
 */
 //c언어 스타일
@@ -52,16 +52,19 @@ binary_tree* sort(FILE*);//파일에서의 다항식 받아 이를 이진트리�
 void RVL_1(binary_tree*, float*, int*);//1번 자료구조를 만드는 함수(배열 자료구조)(중위순회 사용) //매개변수 이진트리의 루트주소, 1번 자료구조의 주소, 인덱스위치 값이 저장된 주소
 float big_exp(binary_tree*);//가장 큰 지수를 찾는 함수(이진트리에서) //매개변수 이진트리의 루트주소
 float small_exp(binary_tree*);//가장 작은 지수를 찾는 함수(이진트리에서) //매개변수 이진트리의 루트주소
+void poly_1_fprint(float*, int);//1번 배열 자료구조 파일 프린트 함수 //매개변수 배열주소, 지수의 최소값
 float* poly_add1(binary_tree*);//1번 배열 자료구조를 이용한 다항식 덧셈 출력 포함 //매개변수 이진트리의 루트주소
 
 //2번 자료구조 함수
 void RVL_2(binary_tree*, polynomial_2*, int*);//2번 자료구조를 만드는 함수(배열 개선 자료구조)(중위순회 사용) //매개변수 이진트리의 루트주소, 2번 자료구조의 주소, 인덱스위치 값이 저장된 주소
+void poly_2_fprint(polynomial_2*,int,int);//2번 자료구조 파일 프린트함수 //매개변수 2번자료구조, 
 polynomial_2* poly_add2(binary_tree*);//2번 배열 개선 자료구조를 이용한 다항식 덧셈 출력 포함 //매개변수 이진트리의 루트주소
 
 //3번 자료구조 함수
-void RVL_3(binary_tree*, polynomial_3*);//3번 자료구조를 만드는 함수(연결리스트 자료구조)(중위순회 사용)!!!!마지막에 빈노드가 추가되는 문제 있음 //매개변수 이진트리의 루트주소, 3번 자료구조의 헤드 주소
+void RVL_3(binary_tree*, polynomial_3**);//3번 자료구조를 만드는 함수(연결리스트 자료구조)(중위순회 사용)!!!!마지막에 빈노드가 추가되는 문제 있음 //매개변수 이진트리의 루트주소, 3번 자료구조의 헤드 주소
 void last_node_pop(polynomial_3*);//연결리스트의 마지막 노드 삭제 함수 RVL_3의 문제 해결 방안 //3번 자료구조의 헤드 노드 주소
 void linked_list_free(polynomial_3*);//3번 연결리스트 자료구조 메모리 해제 함수 //3번 자료구조의 헤드 노드 주소
+void poly_3_fprint(polynomial_3**);// 3번 자료구조 파일 프린트 함수
 polynomial_3* poly_add3(binary_tree*);//3번 연결리스트 자료구조를 이용한 다항식 덧셈 출력 포함 //매개변수 이진트리의 루트주소
 
 //파일 입출력 함수
@@ -87,34 +90,32 @@ int main()
 	{
 		return -1;
 	}
-	output = fopen("output.txt", "w");//출력 파일 열기
+	output = fopen("1.txt", "w");//출력 파일 열기
 	if (output == NULL)//오류처리
 	{
-		fclose(input);
 		return -1;
 	}
-
-	clock_t start, end,time[4] ;//시간 측정용 배열
+	printf("1");
+	clock_t start, end, time[4];//시간 측정용 배열
 	start = clock();//시간 측정 시작
 	binary_tree* head = sort(input);//정렬 함수
 	end = clock();//시간 측정 종료
 	time[0] = end - start;
-	
+	printf("2");
 	start = clock();//시간 측정 시작
 	float* poly_1 = poly_add1(head);//1번 배열 자료구조를 이용한 다항식 덧셈
 	end = clock();//시간 측정 종료
 	time[1] = end - start;
-	
+	printf("3");
 	start = clock();//시간 측정 시작
 	polynomial_2* poly_2 = poly_add2(head);//2번 배열 개선 자료구조를 이용한 다항식 덧셈
 	end = clock();//시간 측정 종료
 	time[2] = end - start;
-	
+	printf("4");
 	start = clock();//시간 측정 시작
 	polynomial_3* poly_3 = poly_add3(head);//3번 연결리스트 자료구조를 이용한 다항식 덧셈
 	end = clock();//시간 측정 종료
 	time[3] = end - start;
-	//void output_file_write();//출력 파일 쓰기 함수
 	/*디버깅용 코드
 	printf("\n정렬된 이진트리의 시간: %f초\n", (float)time[0] / CLOCKS_PER_SEC);//시간 측정 결과 출력
 	printf("1번 배열 자료구조를 이용한 다항식 덧셈의 시간: %f초\n", (float)time[1] / CLOCKS_PER_SEC);//시간 측정 결과 출력
@@ -144,13 +145,13 @@ int main()
 * 헤드 노드에 좌측 자식 노드에는 1번 다항식(head_1) 우측 자식 노드에는 2번 다항식(head_2)
 * 헤드노드의 계수에는 1번 다항식의 항의 개수
 * 헤드노드의 지수에는 2번 다항식의 항의 개수
-* 
+*
 * 이후 서브트리인 1번 다항식과(head_1) 2번 다항식(head_2)
 * 지수가 높은 항은 오른쪽노드에 저장
 * 지수가 낮은 항은 왼쪽노드에 저장
 * 지수가 같으면 계수를 더하여 저장
 * 의 방식으로 정렬
-* 
+*
 * 시공간복잡도:
 * 공간 복잡도는 O(n+m) n='1번 다항식의 항의 개수', m='2번 다항식의 항의 개수'
 * 이 자료구조를 이용한 아래 함수의 시간복잡도는 보통 O(nlog n) 최악 0(n^2) n='다항식의 항의 개수'
@@ -174,7 +175,7 @@ void tree_free(binary_tree* node)
 binary_tree* sort(FILE* input)
 {
 	binary_tree* head = NULL;//다항식두개를 저장하기 위한 이진트리의 헤드 노드
-	head = (binary_tree*)calloc(1,sizeof(binary_tree));//이진트리의 헤드 노드 동적할당
+	head = (binary_tree*)calloc(1, sizeof(binary_tree));//이진트리의 헤드 노드 동적할당
 	binary_tree* head_1 = NULL;//1번 다항식의 서브트리의 헤드 노드
 	binary_tree* head_2 = NULL;//2번 다항식의 서브트리의 헤드 노드
 	binary_tree* temp = NULL;//임시 노드(여기서는 만드려는 노드의 이전 즉 부모노드 뜻함)
@@ -186,7 +187,7 @@ binary_tree* sort(FILE* input)
 	if (num1 > 0)//num1이 0보다 크면 즉 다항식이 존재하면
 	{
 		fscanf(input, "%d %d", &coef, &exp);//파일에서 계수와 지수를 읽어옴
-		head_1 = (binary_tree*)calloc(1,sizeof(binary_tree));//이진트리의 헤드 노드 동적할당
+		head_1 = (binary_tree*)calloc(1, sizeof(binary_tree));//이진트리의 헤드 노드 동적할당
 		head_1->coef = coef;//헤드 노드의 계수
 		head_1->exp = exp;//헤드 노드의 지수
 
@@ -241,7 +242,7 @@ binary_tree* sort(FILE* input)
 				}
 			}
 		}
-		head -> left= head_1;//헤드노드의 왼쪽 노드에 1번 다항식 저장
+		head->left = head_1;//헤드노드의 왼쪽 노드에 1번 다항식 저장
 	}
 	else
 	{
@@ -345,7 +346,7 @@ void RVL_1(binary_tree* node, float* coe, int* i)
 	{
 		RVL_1(node->right, coe, i);//오른쪽 자식노드 재귀호출
 	}
-	coe[(int)(*coe)+1-node->exp] = node->coef;//계수 저장 //배열의 길이 - 현재 항의 계수 -1 =1번 자료구조의 계수의 인덱스 위치
+	coe[(int)(*coe) + 1 - node->exp] = node->coef;//계수 저장 //배열의 길이 - 현재 항의 계수 -1 =1번 자료구조의 계수의 인덱스 위치
 	if (node->left)
 	{
 		RVL_1(node->left, coe, i);//왼쪽 자식노드 재귀호출
@@ -383,102 +384,65 @@ float small_exp(binary_tree* tree)
 	}
 }
 
-
+void poly_1_fprint(float* poly, int small)
+{
+	for (int i = 1; i < poly[0] + 2; i++)//결과 다항식 출력
+	{
+		if (poly[i] != 0)//계수가 0이 아니면 즉 함수의 끝이 아니면
+		{
+			fprintf(output, "%0.fx^%d", poly[i], (int)(poly[0] - i + 1));//결과 다항식의 계수 출력
+			if ((int)(poly[0] - i + 1) != small)//가장 작은 지수와 같지 않으면 즉 식의 끝이 아니면
+			{
+				fprintf(output, " + ");//계수와 계수 사이에 + 출력
+			}
+			//디버깅용 코드
+			/*
+			printf("%0.fx^%d", poly[i], (int)(poly[0] - i + 1));//결과 다항식의 계수 출력
+			if (int)(poly[0] - i + 1) != small)//가장 작은 지수와 같지 않으면 즉 식의 끝이 아니면
+			{
+				printf("+");//계수와 계수 사이에 + 출력
+			}
+			*/
+		}
+	}
+	//printf("\n");//디버깅용 코드
+	fprintf(output, "\n");
+}
 float* poly_add1(binary_tree* head)
 {
 	float* poly_a = NULL;//1번 다항식의 포인터
 	float* poly_b = NULL;//2번 다항식의 포인터
 	float* poly_d = NULL;//결과 다항식의 포인터
 	int iii = big_exp(head->left);//1번 다항식의 가장큰 지수
-	poly_a = (float*)calloc(iii+2, sizeof(float));//1번 다항식 동적할당
+	poly_a = (float*)calloc(iii + 2, sizeof(float));//1번 다항식 동적할당
 	poly_a[0] = iii;
 	iii = big_exp(head->right);//2번 다항식의 가장큰지수
-	poly_b = (float*)calloc(iii+2,	sizeof(float));//2번 다항식 동적할당
+	poly_b = (float*)calloc(iii + 2, sizeof(float));//2번 다항식 동적할당
 	poly_b[0] = iii;
 	iii = 0;
-	RVL_1(head->left, poly_a,&iii );//1번 다항식의 계수를 배열에 저장
+	RVL_1(head->left, poly_a, &iii);//1번 다항식의 계수를 배열에 저장
 	iii = 0;
-	RVL_1(head->right, poly_b,&iii);//2번 다항식의 계수를 배열에 저장
+	RVL_1(head->right, poly_b, &iii);//2번 다항식의 계수를 배열에 저장
 	float* max_poly = poly_a[0] >= poly_b[0] ? poly_a : poly_b;//큰 지수를 가지는 다항식
 	float* min_poly = poly_a[0] < poly_b[0] ? poly_a : poly_b;//작은 지수를 가지는 다항식
 	poly_d = (float*)calloc((max_poly[0] + 2), sizeof(float));//결과 다항식 동적할당
-	poly_d[0] = max_poly [0];//결과 다항식의에 가장 큰 지수 저장
+	poly_d[0] = max_poly[0];//결과 다항식의에 가장 큰 지수 저장
 	int i = 1;//반복문을 위한 변수(배열의 0번째 위치는 이미 값이 저장되어 있으니 1부터 시작)
-	for (; i < ((int)(poly_d[0] - min_poly[0])+1); i++)//큰 지수의 다항식의 계수부터 합하기 시작
+	for (; i < ((int)(poly_d[0] - min_poly[0]) + 1); i++)//큰 지수의 다항식의 계수부터 합하기 시작
 	{
 		poly_d[i] = max_poly[i];//결과 다항식의 계수에 큰 지수의 계수 저장
 	}
-	for (int ii = 1; ii < ((int)(min_poly[0])+2); i++, ii++)
+	for (int ii = 1; ii < ((int)(min_poly[0]) + 2); i++, ii++)
 	{
 		poly_d[i] = max_poly[i] + min_poly[ii];//결과 다항식의 계수에 큰 지수의 남은 계수와 작은 지수의 계수 저장
 	}
 	//1번식 파일 출력
-	for (int i = 1; i < poly_a[0] + 2; i++)//결과 다항식 출력
-	{
-		if (poly_a[i] != 0)//계수가 0이 아니면 즉 함수의 끝이 아니면
-		{
-			fprintf(output, "%0.fx^%d", poly_a[i], (int)(poly_a[0] - i + 1));//결과 다항식의 계수 출력
-			if ((int)(poly_a[0] - i + 1) != small_exp(head->left))//가장 작은 지수와 같지 않으면 즉 식의 끝이 아니면
-			{
-				fprintf(output, " + ");//계수와 계수 사이에 + 출력
-			}
-			//디버깅용 코드
-			/*
-			printf("%0.fx^%d", poly_a[i], (int)(poly_a[0] - i + 1));//결과 다항식의 계수 출력
-			if ((int)(poly_a[0] - i + 1) != small_exp(head->left))//가장 작은 지수와 같지 않으면 즉 식의 끝이 아니면
-			{
-				printf("+");//계수와 계수 사이에 + 출력
-			}
-			*/
-		}
-	}
-	//printf("\n");//디버깅용 코드
-	fprintf(output, "\n");
+	poly_1_fprint(poly_a, small_exp(head->left));
 	//2번식 파일 출력
-	for (int i = 1; i < poly_b[0] + 2; i++)//결과 다항식 출력
-	{
-		if (poly_b[i] != 0)//계수가 0이 아니면 즉 함수의 끝이 아니면
-		{
-			fprintf(output, "%0.fx^%d", poly_b[i], (int)(poly_b[0] - i + 1));//결과 다항식의 계수 출력
-			if ((int)(poly_b[0] - i + 1) != small_exp(head->right))//가장 작은 지수와 같지 않으면 즉 식의 끝이 아니면
-			{
-				fprintf(output, " + ");//계수와 계수 사이에 + 출력
-			}
-		}
-		//디버깅용 코드
-		/*
-		printf("%0.fx^%d", poly_b[i], (int)(poly_b[0] - i + 1));//결과 다항식의 계수 출력
-		if ((int)(poly_b[0] - i + 1) != small_exp(head->right))//가장 작은 지수와 같지 않으면 즉 식의 끝이 아니면
-		{
-			printf("+");//계수와 계수 사이에 + 출력
-		}
-		*/
-	}
-	//printf("\n");//디버깅용 코드
-	fprintf(output,"\n");
+	poly_1_fprint(poly_b, small_exp(head->right));
 	//결과 다항식 파일 출력
 	int small = small_exp(head->left) < small_exp(head->right) ? small_exp(head->left) : small_exp(head->right);//가장 작은 지수
-	for (int i = 1; i < poly_d[0] + 2; i++)//결과 다항식 출력
-	{
-		if (poly_d[i] != 0)//계수가 0이 아니면 즉 함수의 끝이 아니면
-		{
-			fprintf(output, "%0.fx^%d", poly_d[i], (int)(poly_d[0] - i + 1));//결과 다항식의 계수 출력
-			if ((int)(poly_d[0] - i + 1) != small)//가장 작은 지수와 같지 않으면 즉 식의 끝이 아니면
-			{
-				fprintf(output, " + ");//계수와 계수 사이에 + 출력
-			}
-			//디버깅용 코드
-			/*
-			printf("%0.fx^%d", poly_d[i], (int)(poly_d[0] - i + 1));//결과 다항식의 계수 출력
-			if ((int)(poly_d[0] - i + 1) != small)//가장 작은 지수와 같지 않으면 즉 식의 끝이 아니면
-			{
-				printf("+");//계수와 계수 사이에 + 출력
-			}
-			*/
-		}
-	}
-	//printf("\n\n\n");//디버깅용 코드
-	fprintf(output, "\n");
+	poly_1_fprint(poly_d, small);
 	free(poly_a);//1번 다항식 메모리 해제
 	free(poly_b);//2번 다항식 메모리 해제
 	return poly_d;//결과 다항식 반환
@@ -510,17 +474,40 @@ void RVL_2(binary_tree* node, polynomial_2* poly, int* i)
 {
 	if (node->right)//오른쪽 자식 노드 여부 확인
 	{
-		RVL_2(node->right, poly,i);//오른쪽 자식노드 재귀호출
+		RVL_2(node->right, poly, i);//오른쪽 자식노드 재귀호출
 	}
 	poly[*i].coef = node->coef;//계수 저장
 	poly[*i].exp = node->exp;//지수 저장
 	(*i)++;//다음 배열로 이동
 	if (node->left)
 	{
-		RVL_2(node->left, poly,i);//왼쪽 자식노드 재귀호출
+		RVL_2(node->left, poly, i);//왼쪽 자식노드 재귀호출
 	}
 }
 
+void poly_2_fprint(polynomial_2* poly,int ii,int i)
+{
+	for (; i < ii; i++)//결과 다항식 출력
+	{
+		if (poly[i].coef != 0)//계수가 0이 아니면 즉 함수의 끝이 아니면
+		{
+			fprintf(output, "%0.fx^%d", poly[i].coef, poly[i].exp);//결과 다항식의 계수 출력
+			if (i < ii - 1)//마지막 항이 아니면
+			{
+				fprintf(output, " + ");
+			}
+			//디버깅용 코드
+			/*
+			printf("%0.fx^%d", poly[i].coef, poly[i].exp);//결과 다항식의 계수 출력
+			if (i < ii - 1)//마지막 항이 아니면
+			{
+				printf("+");
+			}
+			*/
+			}
+	}
+	fprintf(output, "\n");
+}
 
 polynomial_2* poly_add2(binary_tree* head)
 {
@@ -533,119 +520,57 @@ polynomial_2* poly_add2(binary_tree* head)
 	poly_d = (polynomial_2*)calloc(head->coef + head->exp, sizeof(polynomial_2));//결과 다항식 동적할당 최악의 경우를 상정하여 두항의 합의 개수로 동적할당
 	int ii = 0, iii = 0;//계산을 위한 변수
 	j = 0;//다시 초기화
-	for (int i = 0, ii = 0, iii = 0;1; i++)//두 다항식의 합
+	for (int i = 0, ii = 0, iii = 0; 1; i++)//두 다항식의 합
+	{
+		if (ii >= head->coef)//1번 다항식의 항의 개수를 초과하면
 		{
-			if (ii >= head->coef)//1번 다항식의 항의 개수를 초과하면
-			{
-				for (; iii < head->exp; i++, iii++)
-				{
-					poly_d[i].coef = poly_a[iii + (int)(head->coef)].coef;//계수 저장
-					poly_d[i].exp = poly_a[iii + (int)(head->coef)].exp;//지수 저장
-				}
-				break;//반복문 종료
-			}
-			else if (iii >= head->exp)//2번 다항식의 항의 개수를 초과하면
-			{
-				for (; ii < head->coef; i++, ii++)
-				{
-					poly_d[i].coef = poly_a[ii].coef;//계수 저장
-					poly_d[i].exp = poly_a[ii].exp;//지수 저장
-				}
-				break;//반복문 종료
-			}
-			if (poly_a[ii].exp == poly_a[iii + (int)(head->coef)].exp)//지수가 같으면
-			{
-				poly_d [i].coef = poly_a[ii].coef + poly_a[iii + (int)(head->coef)].coef;//계수를 더함
-				poly_d[i].exp = poly_a[ii].exp;//지수 저장
-				ii++;//1번 다항식 다음 배열로 이동
-				iii++;//2번 다항식 다음 배열로 이동
-				j++;//사이즈 감소
-				continue;//계속 반복
-			}
-			else if (poly_a[ii].exp > poly_a[iii + (int)(head->coef)].exp)//1번 다항식의 지수가 더 크면
-			{
-				poly_d[i].coef = poly_a[ii].coef;//계수 저장
-				poly_d[i].exp = poly_a[ii].exp;//지수 저장
-				ii++;//1번 다항식 다음 배열로 이동
-				continue;//계속 반복
-			}
-			else//2번 다항식의 지수가 더 크면
+			for (; iii < head->exp; i++, iii++)
 			{
 				poly_d[i].coef = poly_a[iii + (int)(head->coef)].coef;//계수 저장
 				poly_d[i].exp = poly_a[iii + (int)(head->coef)].exp;//지수 저장
-				iii++;//2번 다항식 다음 배열로 이동
-				continue;//계속 반복
 			}
+			break;//반복문 종료
 		}
-	poly_d = (polynomial_2*)realloc(poly_d, sizeof(polynomial_2) * (head->coef + head->exp - j));//결과 다항식 동적할당 최악의 경우를 상정하여 두항의 합의 개수로 동적할당
+		else if (iii >= head->exp)//2번 다항식의 항의 개수를 초과하면
+		{
+			for (; ii < head->coef; i++, ii++)
+			{
+				poly_d[i].coef = poly_a[ii].coef;//계수 저장
+				poly_d[i].exp = poly_a[ii].exp;//지수 저장
+			}
+			break;//반복문 종료
+		}
+		if (poly_a[ii].exp == poly_a[iii + (int)(head->coef)].exp)//지수가 같으면
+		{
+			poly_d[i].coef = poly_a[ii].coef + poly_a[iii + (int)(head->coef)].coef;//계수를 더함
+			poly_d[i].exp = poly_a[ii].exp;//지수 저장
+			ii++;//1번 다항식 다음 배열로 이동
+			iii++;//2번 다항식 다음 배열로 이동
+			j++;//사이즈 감소
+			continue;//계속 반복
+		}
+		else if (poly_a[ii].exp > poly_a[iii + (int)(head->coef)].exp)//1번 다항식의 지수가 더 크면
+		{
+			poly_d[i].coef = poly_a[ii].coef;//계수 저장
+			poly_d[i].exp = poly_a[ii].exp;//지수 저장
+			ii++;//1번 다항식 다음 배열로 이동
+			continue;//계속 반복
+		}
+		else//2번 다항식의 지수가 더 크면
+		{
+			poly_d[i].coef = poly_a[iii + (int)(head->coef)].coef;//계수 저장
+			poly_d[i].exp = poly_a[iii + (int)(head->coef)].exp;//지수 저장
+			iii++;//2번 다항식 다음 배열로 이동
+			continue;//계속 반복
+		}
+	}
+	poly_d = (polynomial_2*)realloc(poly_d, sizeof(polynomial_2) * ((int)(head->coef)+ head->exp - j));//결과 다항식 동적할당 최악의 경우를 상정하여 두항의 합의 개수로 동적할당
 	//1번식 파일 출력
-	for (int i = 0; i < head->coef; i++)//결과 다항식 출력
-	{
-		if (poly_a[i].coef != 0)//계수가 0이 아니면 즉 함수의 끝이 아니면
-		{
-			fprintf(output, "%0.fx^%d", poly_a[i].coef, poly_a[i].exp);//결과 다항식의 계수 출력
-			if (i < head->coef - 1)//마지막 항이 아니면
-			{
-				fprintf(output, " + ");
-			}
-			//디버깅용 코드
-			/*
-			printf("%0.fx^%d", poly_a[i].coef, poly_a[i].exp);//결과 다항식의 계수 출력
-			if (i < head->coef - 1)//마지막 항이 아니면
-			{
-				printf("+");
-			}
-			*/
-		}
-	}
-	//printf("\n");//디버깅용	코드
-	fprintf(output, "\n");
-	
-	//이하 디버깅 용 코드
+	poly_2_fprint(poly_a, (int)(head->coef),0);
 	//2번식 파일 출력
-	for (int i = head->coef; i < head->coef + head->exp; i++)//결과 다항식 출력
-	{
-		if (poly_a[i].coef != 0)//계수가 0이 아니면 즉 함수의 끝이 아니면
-		{
-			fprintf(output, "%0.fx^%d", poly_a[i].coef, poly_a[i].exp);//결과 다항식의 계수 출력
-			if (i < head->coef + head->exp - 1)//마지막 항이 아니면
-			{
-				fprintf(output, " + ");
-			}
-			//디버깅용 코드
-			/*
-			printf("%0.fx^%d", poly_a[i].coef, poly_a[i].exp);//결과 다항식의 계수 출력
-			if (i < head->coef + head->exp - 1)//마지막 항이 아니면
-			{
-				printf("+");
-			}
-			*/
-		}
-	}
-	//printf("\n");//디버깅용	코드
-	fprintf(output, "\n");
+	poly_2_fprint(poly_a, ((int)(head->coef) + head->exp), (int)(head->coef));
 	//결과 다항식 파일 출력
-	for (int i = 0; i < head->coef + head->exp-j; i++)//결과 다항식 출력
-	{
-		if (poly_d[i].coef != 0)//계수가 0이 아니면 즉 함수의 끝이 아니면
-		{
-			fprintf(output, "%0.fx^%d", poly_d[i].coef, poly_d[i].exp);//결과 다항식의 계수 출력
-			if (i < head->coef + head->exp -j - 1)//마지막 항이 아니면
-			{
-				fprintf(output, " + ");
-			}
-			//디버깅용 코드
-			/*
-			printf("%0.fx^%d", poly_d[i].coef, poly_d[i].exp);//결과 다항식의 계수 출력
-			if (i < head->coef + head->exp - j - 1)//마지막 항이 아니면
-			{
-				printf("+");
-			}
-			*/
-		}
-	}
-	//printf("\n\n\n");//디버깅용	코드
-	fprintf(output, "\n"); 
+	poly_2_fprint(poly_d, ((int)(head->coef) + head->exp - j),0);;
 	free(poly_a);//다항식 메모리 해제
 	return poly_d;//결과 다항식 반환
 }
@@ -673,26 +598,22 @@ polynomial_2* poly_add2(binary_tree* head)
 */
 
 
-void RVL_3(binary_tree* node, polynomial_3* head)
+void RVL_3(binary_tree* node, polynomial_3** temp)
 {
 	if (node->right)//오른쪽 자식 노드 여부 확인
 	{
-		RVL_3(node->right, head);//오른쪽 자식노드 재귀호출
+		RVL_3(node->right, temp);//오른쪽 자식노드 재귀호출
 	}
-	// 새로운 노드 생성
-	polynomial_3* temp = head;//임시 노드에 헤드 노드 저장
-	while (temp->next != NULL)//마지막 노드까지 이동
-	{
-		temp = temp->next;//임시 노드 변경
-	}
-	temp->next = (polynomial_3*)calloc(1, sizeof(polynomial_3));//다음 노드 동적할당
-	temp->coef = node->coef;//계수 저장
-	temp->exp = node->exp;//지수 저장
+	(*temp)->coef = node->coef;
+	(*temp)->exp = node->exp;
+	(*temp)->next = (polynomial_3*)calloc(1, sizeof(polynomial_3));//다음 노드 동적할당
+	(*temp) = (*temp)->next;
 	if (node->left)
 	{
-		RVL_3(node->left, head);//왼쪽 자식노드 재귀호출
+		RVL_3(node->left, temp);//왼쪽 자식노드 재귀호출
 	}
 }
+
 
 
 void linked_list_free(polynomial_3* poly)
@@ -727,27 +648,52 @@ void last_node_pop(polynomial_3* head)
 	temp->next = NULL; // 마지막 노드 이전 노드의 next를 NULL로 설정
 }
 
+void poly_3_fprint(polynomial_3* head)
+{
+	for (polynomial_3* temp = head; temp != NULL; temp = temp->next)//결과 다항식 출력
+	{
+		fprintf(output, "%0.fx^%d", temp->coef, temp->exp);//결과 다항식의 계수 출력
+		if (temp->next != NULL)//마지막 항이 아니면
+		{
+			fprintf(output, " + ");
+		}
+		//디버깅용 코드
+		/*
+		printf("%0.fx^%d", temp->coef, temp->exp);//결과 다항식의 계수 출력
+		if (temp->next != NULL)//마지막 항이 아니면
+		{
+			printf("+");
+		}
+		*/
+	}
+	//printf("\n");//디버깅용 코드
+	fprintf(output, "\n");
+}
 
 polynomial_3* poly_add3(binary_tree* head)
 {
 	polynomial_3* poly_a_head = NULL;//1번 다항식의 포인터
 	polynomial_3* poly_b_head = NULL;//2번 다항식의 포인터
 	polynomial_3* poly_d_head = NULL;//결과 다항식의 포인터
-	polynomial_3* poly_a = NULL;//1번 다항식의 포인터
-	polynomial_3* poly_b = NULL;//2번 다항식의 포인터
-	polynomial_3* poly_d = NULL;//결과 다항식의 포인터
-	polynomial_3* temp = NULL;//임시 노드 포인터
+	polynomial_3* poly_a = NULL;//1번 다항식 임시 포인터
+	polynomial_3* poly_b = NULL;//2번 다항식 임시 포인터
+	polynomial_3* poly_d = NULL;//결과 다항식의 임시 포인터
+	polynomial_3** temp = NULL;//임시 2중 포인터
 	poly_a_head = (polynomial_3*)calloc(1, sizeof(polynomial_3));//1번 다항식 동적할당
 	poly_b_head = (polynomial_3*)calloc(1, sizeof(polynomial_3));//2번 다항식 동적할당
 	poly_d_head = (polynomial_3*)calloc(1, sizeof(polynomial_3));//결과 다항식 동적할당
-	RVL_3(head->left, poly_a_head);// 1번 다항식의 계수를 연결리스트에 저장
-	RVL_3(head->right, poly_b_head);//2번 다항식의 계수를 연결리스트에 저장
+	poly_a = poly_a_head;//1번 다항식의 포인터
+	poly_b = poly_b_head;//2번 다항식의 포인터
+	temp = &poly_a;
+	RVL_3(head->left, temp);// 1번 다항식의 계수를 연결리스트에 저장
+	temp = &poly_b;
+	RVL_3(head->right, temp);//2번 다항식의 계수를 연결리스트에 저장
 	last_node_pop(poly_a_head);//1번 다항식의 마지막 노드 삭제
 	last_node_pop(poly_b_head);//2번 다항식의 마지막 노드 삭제
 	poly_a = poly_a_head;//1번 다항식의 포인터
 	poly_b = poly_b_head;//2번 다항식의 포인터
 	poly_d = poly_d_head;//결과 다항식의 포인터
-	for (;1;)//두 다항식의 합
+	for (; 1;)//두 다항식의 합
 	{
 		if (poly_a == NULL)//1번 다항식의 끝에 도달하면
 		{
@@ -773,7 +719,7 @@ polynomial_3* poly_add3(binary_tree* head)
 		}
 		else if (poly_a->exp == poly_b->exp)//계수가 같으면
 		{
-			poly_d ->coef = poly_a->coef + poly_b->coef;//계수를 더함
+			poly_d->coef = poly_a->coef + poly_b->coef;//계수를 더함
 			poly_d->exp = poly_a->exp;//지수 저장
 			poly_a = poly_a->next;//1번 다항식 다음 노드로 이동
 			poly_b = poly_b->next;//2번 다항식 다음 노드로 이동
@@ -801,63 +747,9 @@ polynomial_3* poly_add3(binary_tree* head)
 		}
 	}
 	last_node_pop(poly_d_head);//결과 다항식의 마지막 노드 삭제
-	//1번식 파일 출력
-	for (temp = poly_a_head; temp != NULL; temp = temp->next)//결과 다항식 출력
-	{
-		fprintf(output, "%0.fx^%d", temp->coef, temp->exp);//결과 다항식의 계수 출력
-		if (temp->next != NULL)//마지막 항이 아니면
-		{
-			fprintf(output," + ");
-		}
-		//디버깅용 코드
-		/*
-		printf("%0.fx^%d", temp->coef, temp->exp);//결과 다항식의 계수 출력
-		if (temp->next != NULL)//마지막 항이 아니면
-		{
-			printf("+");
-		}
-		*/
-	}
-	//printf( "\n");//디버깅용 코드
-	fprintf(output, "\n");
-	//2번식 파일 출력
-	for (temp = poly_b_head; temp != NULL; temp = temp->next)//결과 다항식 출력
-	{
-		fprintf(output, "%0.fx^%d", temp->coef, temp->exp);//결과 다항식의 계수 출력
-		if (temp->next != NULL)//마지막 항이 아니면
-		{
-			fprintf(output, " + ");
-		}
-		//디버깅용 코드
-		/*
-		printf("%0.fx^%d", temp->coef, temp->exp);//결과 다항식의 계수 출력
-		if (temp->next != NULL)//마지막 항이 아니면
-		{
-			printf("+");
-		}
-		*/
-	}
-	//printf("\n");//디버깅용 코드
-	fprintf(output, "\n");
-	//결과 다항식 파일 출력
-	for (temp = poly_d_head; temp != NULL; temp = temp->next)//결과 다항식 출력
-	{
-		fprintf(output, "%0.fx^%d", temp->coef, temp->exp);//결과 다항식의 계수 출력
-		if (temp->next != NULL)//마지막 항이 아니면
-		{
-			fprintf(output, " + ");
-		}
-		//디버깅용 코드
-		/*
-		printf("%0.fx^%d", temp->coef, temp->exp);//결과 다항식의 계수 출력
-		if (temp->next != NULL)//마지막 항이 아니면
-		{
-			printf("+");
-		}
-		*/
-	}
-	//printf("\n\n\n");//디버깅용 코드
-	fprintf(output, "\n");
+	poly_3_fprint(poly_a_head);//1번 다항식 출력
+	poly_3_fprint(poly_b_head);//2번 다항식 출력
+	poly_3_fprint(poly_d_head);//3번 다항식 출력
 	linked_list_free(poly_a_head);//1번 다항식 메모리 해제
 	linked_list_free(poly_b_head);//2번 다항식 메모리 해제
 	return poly_d_head;//결과 다항식 반환
@@ -881,23 +773,23 @@ void outpu_time_file(clock_t time[4])
 void make_poly()
 {
 	FILE* file = fopen("Input.txt", "w");
-	if (file == NULL) 
+	if (file == NULL)
 	{
 		printf("파일을 열 수 없습니다.\n");
 	}
 
-	int i = 10000;//1번 다항식의 항의 개수
-	int ii = 50000;//2번 다항식의 항의 개수
-	int iii = 10;//계수의 범위
-	int iV = 10;//지수의 범위
+	int i = 2;//1번 다항식의 항의 개수
+	int ii = 3;//2번 다항식의 항의 개수
+	int iii = 5;//계수의 범위
+	int iV = 4;//지수의 범위
 	fprintf(file, "%d %d\n", i, ii);
 	iV += 1;//0포함
 	srand(time(NULL)); // 랜덤 시드 설정
 
-	for (int j = 0; j < (i + ii); j++) 
+	for (int j = 0; j < (i + ii); j++)
 	{ // i+j 줄 생성
 		int num1 = (rand() % iii + 1); // 첫 번째 숫자 범위
-		int num2 = (rand() % iV + 1)-1; // 두 번째 숫자 범위
+		int num2 = (rand() % iV + 1) - 1; // 두 번째 숫자 범위
 		fprintf(file, "%d %d\n", num1, num2);
 	}
 
