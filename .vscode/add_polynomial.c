@@ -64,7 +64,7 @@ polynomial_2* poly_add2(binary_tree*);//2번 배열 개선 자료구조를 이�
 void RVL_3(binary_tree*, polynomial_3**);//3번 자료구조를 만드는 함수(연결리스트 자료구조)(중위순회 사용)!!!!마지막에 빈노드가 추가되는 문제 있음 //매개변수 이진트리의 루트주소, 3번 자료구조의 헤드 주소
 void last_node_pop(polynomial_3*);//연결리스트의 마지막 노드 삭제 함수 RVL_3의 문제 해결 방안 //3번 자료구조의 헤드 노드 주소
 void linked_list_free(polynomial_3*);//3번 연결리스트 자료구조 메모리 해제 함수 //3번 자료구조의 헤드 노드 주소
-void poly_3_fprint(polynomial_3**);// 3번 자료구조 파일 프린트 함수
+void poly_3_fprint(polynomial_3*);// 3번 자료구조 파일 프린트 함수
 polynomial_3* poly_add3(binary_tree*);//3번 연결리스트 자료구조를 이용한 다항식 덧셈 출력 포함 //매개변수 이진트리의 루트주소
 
 //파일 입출력 함수
