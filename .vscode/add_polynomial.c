@@ -90,7 +90,7 @@ int main()
 	{
 		return -1;
 	}
-	output = fopen("1.txt", "w");//출력 파일 열기
+	output = fopen("output.txt", "w");//출력 파일 열기
 	if (output == NULL)//오류처리
 	{
 		return -1;
